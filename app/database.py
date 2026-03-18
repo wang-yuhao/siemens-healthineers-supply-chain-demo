@@ -1,6 +1,7 @@
 """Database Layer - SQLite/SQL integration with Kafka"""
 import sqlite3
 import pandas as pd
+import numpy as np
 from datetime import datetime, timedelta
 import json
 import os
@@ -82,8 +83,8 @@ class Database:
                     # Add seasonality and trend
                     demand = int(base_demand + 
                                 20 * (i / 180) +  # trend
-                                15 * pd.np.sin(2 * pd.np.pi * i / 30) +  # monthly cycle
-                                pd.np.random.normal(0, 10))  # noise
+                                15 * np.sin(2 * np.pi * i / 30) +  # monthly cycle
+                                np.random.normal(0, 10))  # noise
                     demand = max(0, demand)
                     
                     data.append((sku, date, demand, demand + 50, 3))
