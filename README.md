@@ -140,6 +140,11 @@ git clone https://github.com/wang-yuhao/siemens-healthineers-supply-chain-demo.g
 cd siemens-healthineers-supply-chain-demo
 
 # Start all services
+docker-compose up --build
+
+# If you need to completely rebuild (remove old images)
+docker-compose down
+docker-compose build --no-cache
 docker-compose up
 
 # Access the dashboard
