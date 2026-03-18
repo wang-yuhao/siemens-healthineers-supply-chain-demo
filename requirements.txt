@@ -13,7 +13,6 @@ kafka-python==2.0.2
 sqlalchemy==2.0.19
 snowflake-connector-python==3.0.4
 snowflake-sqlalchemy==1.5.0
-pyarrow==12.0.1
 pytest==7.4.0
 pytest-cov==4.1.0
 flask==2.3.2
