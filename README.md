@@ -23,10 +23,9 @@
 - [Demo Screenshots](#-demo-screenshots)
 - [Technical Highlights](#-technical-highlights)
 - [Future Enhancements](#-future-enhancements)
+- - [Data Warehouse & Analytics](#-data-warehouse--analytics-integration)
 
 ---
-
-## 🎯 Overview
 
 This project demonstrates a complete data science and engineering solution for optimizing medical equipment supply chain management. Built specifically for Siemens Healthineers, it showcases:
 
@@ -120,6 +119,9 @@ This project demonstrates a complete data science and engineering solution for o
 | **Data Streaming** | Kafka (architecture), IoT simulation |
 | **DevOps** | Docker, Docker Compose |
 | **Version Control** | Git, GitHub |
+| **Data Warehouse** | Snowflake-ready architecture, Cloud data platform integration |
+| **Visualization** | PowerBI/Grafana compatible, Interactive dashboards |
+| **CI/CD** | GitHub Actions, Automated testing & deployment |
 
 ---
 
@@ -310,6 +312,34 @@ producer = KafkaProducer(
 ## 🚀 Future Enhancements
 
 ### Planned Features
+
+## 📊 Data Warehouse & Analytics Integration
+
+This solution is designed with enterprise-scale data warehousing in mind:
+
+### Snowflake Compatibility
+
+- **Cloud Data Platform**: Architecture ready for Snowflake integration
+- **Data Pipeline**: Structured ETL processes for data warehouse ingestion
+- **Schema Design**: Normalized structure compatible with cloud data warehouses
+- **Scalable Storage**: Designed for petabyte-scale data management
+- **Query Optimization**: Efficient data models for analytical queries
+
+### PowerBI & Grafana Integration
+
+- **PowerBI Dashboards**: Data structure compatible with Microsoft PowerBI
+- **Grafana Metrics**: Real-time KPI monitoring with Grafana
+- **Custom Visualizations**: Interactive charts and business intelligence reports
+- **Data Refresh**: Automated data synchronization for up-to-date insights
+- **Multi-platform Support**: Export capabilities to various BI platforms
+
+### Advanced Analytics Features
+
+- **Historical Analysis**: Long-term trend identification and forecasting
+- **Predictive Analytics**: ML-driven demand predictions with confidence intervals
+- **Anomaly Detection**: Automated identification of unusual patterns
+- **Performance Metrics**: Comprehensive KPI tracking (RMSE, MAE, MAPE, R²)
+- **Business Intelligence**: Strategic insights from supply chain data
 
 - [ ] **Advanced Models**: Prophet, ARIMA, XGBoost ensemble
 - [ ] **Production Kafka**: Full Apache Kafka deployment
