@@ -1,0 +1,77 @@
+version: '3.8'
+
+services:
+  # Streamlit Dashboard
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: siemens-supply-chain-dashboard
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./app:/app/app
+      - ./data:/app/data
+    environment:
+      - PYTHONUNBUFFERED=1
+    command: streamlit run app/dashboard.py
+    networks:
+      - supply-chain-network
+    depends_on:
+      - database
+
+  # Database Service (SQLite - for demo)
+  # In production, replace with PostgreSQL or MySQL
+  database:
+    image: alpine:latest
+    container_name: siemens-supply-chain-db
+    volumes:
+      - ./data:/data
+    networks:
+      - supply-chain-network
+    command: tail -f /dev/null  # Keep container running
+
+  # Kafka & Zookeeper for Real-Time Streaming
+  # Uncomment for production deployment
+  # zookeeper:
+  #   image: confluentinc/cp-zookeeper:latest
+  #   container_name: zookeeper
+  #   environment:
+  #     ZOOKEEPER_CLIENT_PORT: 2181
+  #     ZOOKEEPER_TICK_TIME: 2000
+  #   networks:
+  #     - supply-chain-network
+
+  # kafka:
+  #   image: confluentinc/cp-kafka:latest
+  #   container_name: kafka
+  #   depends_on:
+  #     - zookeeper
+  #   ports:
+  #     - "9092:9092"
+  #   environment:
+  #     KAFKA_BROKER_ID: 1
+  #     KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+  #     KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+  #     KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+  #   networks:
+  #     - supply-chain-network
+
+  # Grafana for Visualization (Optional)
+  # grafana:
+  #   image: grafana/grafana:latest
+  #   container_name: grafana
+  #   ports:
+  #     - "3000:3000"
+  #   environment:
+  #     - GF_SECURITY_ADMIN_PASSWORD=admin
+  #   networks:
+  #     - supply-chain-network
+
+networks:
+  supply-chain-network:
+    driver: bridge
+
+volumes:
+  data:
+    driver: local
