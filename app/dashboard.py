@@ -37,7 +37,7 @@ class DashboardApp:
 
     def run(self):
         # Sidebar Navigation
-        st.sidebar.image("https://www.siemens-healthineers.com/assets/logo.772b9c025df2d0807537b2ebb51f07d5.svg", width=50)
+        st.sidebar.image("https://www.siemens-healthineers.com/assets/logo.772b9c025df2d0807537b2ebb51f07d5.svg", width=150)
         st.sidebar.title("Navigation")
         page = st.sidebar.radio("Go to", ["Executive Dashboard", "Supply Chain Resilience", "MLOps Admin Center", "Model Explainability"])
 
