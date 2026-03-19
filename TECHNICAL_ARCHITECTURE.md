@@ -1,49 +1,44 @@
 # 🏗️ Technical Architecture & Implementation Deep-Dive
 
-This document details how this solution fulfills the senior data scientist requirements for Siemens Healthineers, specifically focusing on **Neural Networks**, **Real-time Data Streaming (Kafka/Snowflake)**, and **E2E Full-Stack/DevOps**.
-
----
+This document details how the solution fulfills the requirements for an Industry 4.0 medical supply chain environment, focusing on **Self-Trained Neural Networks**, **Real-time Data Streaming (Kafka/Snowflake)**, and **MLOps/E2E DevOps**.
 
 ## 1. 🧠 Self-Trained Neural Networks (AI Implementation)
-**Requirement**: *"Fundierte Erfahrung in der Implementierung von AI-Lösungen mit selbst trainierten neuronalen Netzen"*
+
+**Focus**: Multi-horizon demand forecasting for complex, non-linear demand patterns in medical equipment logistics.
 
 ### Implementation:
-- **Architecture**: A **Temporal Fusion Transformer (TFT)** or **LSTM-based Recurrent Neural Network** implemented in PyTorch/TensorFlow.
-- **Problem**: Multi-horizon demand forecasting for complex, non-linear demand patterns in Medical Electronics.
-- **Key Features**:
-  - Custom training loop with early stopping and learning rate scheduling.
-  - Inclusion of static covariates (SKU family, criticality) and time-varying features (lead times, machine status).
-  - Quantile loss function to output prediction intervals ($P_{10}, P_{50}, P_{90}$) directly for risk-aware safety stock calculation.
+*   **Architecture**: Custom **LSTM (Long Short-Term Memory)** network implemented in PyTorch from scratch.
+*   **Problem Space**: Handles seasonality and volatility better than traditional statistical models.
+*   **Key Features**:
+    *   Custom training loops with early stopping to prevent overfitting.
+    *   Integration of static SKU-level metadata and dynamic time-series features.
+    *   Modular architecture allowing for easy transition to **Temporal Fusion Transformers (TFT)** for multi-quantile forecasting.
 
----
+## 2. ⚡ Real-Time Data Pipelines (Kafka & Cloud Data)
 
-## 2. ⚡ Real-Time Data Streaming (Kafka & Cloud Data)
-**Requirement**: *"Kenntnisse im Echtzeit-Data-Streaming (mit z.B. Kafka) von IoT/Maschinen zu lokalen (SQL) und Cloud-Datenbanken (z.B. Snowflake)"*
+**Focus**: Real-time telemetry from IoT sensors on manufacturing lines to cloud-scale analytical databases.
 
 ### Architecture:
-1. **Producer**: IoT sensors on manufacturing lines (MES) and ERP order events.
-2. **Streaming Layer**: **Apache Kafka** cluster (mocked in demo) ingests events into topics like `production_line_status` and `inventory_updates`.
-3. **Consumer/ETL**: A Python-based Kafka consumer cleanses data and performs real-time feature engineering.
-4. **Storage**:
-   - **Local (SQL)**: SQLite/PostgreSQL for fast operational caching and state management.
-   - **Cloud (Snowflake)**: Sink connector pushes batch-clean data to Snowflake for long-term historical training and large-scale analytics.
-5. **Monitoring**: **Grafana** dashboard connected to the SQL layer for sub-second manufacturing line throughput visibility.
+1.  **IoT Producer**: Simulated manufacturing line sensors (MES) streaming demand spikes and operational anomalies.
+2.  **Streaming Layer**: Mocked **Apache Kafka** architecture. Events are ingested into topics such as `production_status` and `inventory_delta`.
+3.  **Real-time Consumer**: A Python-based ETL service that performs sub-second feature engineering before database ingestion.
+4.  **Multi-Tier Storage**:
+    *   **Local (SQL)**: SQLite used for operational caching and dashboard state.
+    *   **Cloud Data Warehouse**: Architecture is **Snowflake-ready**, demonstrating logic for batch-loading clean telemetry into Snowflake for long-term historical analysis.
 
----
+## 3. 🛡️ MLOps & E2E Full-Stack
 
-## 3. 🌐 E2E Full-Stack & DevOps
-**Requirement**: *"Erfahrung mit E2E-Full-Stack-Implementierung... einschließlich Backend, Datenbanken, graphische Benutzeroberflächen, DevOps und CI/CD"*
+**Focus**: Building a production-grade software system, not just a data science script.
 
 ### Components:
-- **Backend**: **FastAPI** / Python service serving model predictions and inventory logic.
-- **Frontend/GUI**: **Streamlit** dashboard for planners (simulating the interactive capabilities of Power BI/Qlik).
-- **Database**: Multi-tier storage (SQLite + Snowflake simulation).
-- **Containerization**: **Docker** & **Docker Compose** for consistent environment orchestration.
-- **DevOps/CI/CD**:
-  - **GitHub Actions**: Automated testing, linting, and container build on every push to `main`.
-  - **Automated Retraining**: Pipeline triggers a new model training job when data drift exceeds a defined threshold (Model Ops).
+*   **Backend/API**: FastAPI layer serving live inference requests.
+*   **Frontend**: Professional **Streamlit** dashboard with dedicated **Executive** and **MLOps Admin** views.
+*   **Experiment Tracking**: Integrated **MLflow** for model registry, hyperparameter tracking (via **Optuna**), and version control.
+*   **Observability**: Real-time drift detection (PSI) and data quality validation integrated directly into the admin UI.
+*   **Containerization**: Fully orchestrated via **Docker Compose**, ensuring a "one-click" setup for production environments.
 
 ---
 
-## 🚀 Presentation Narrative:
-> *"In this demo, I haven't just built a statistical model; I've implemented a full-stack Industry 4.0 architecture. We have a **self-trained LSTM network** that handles non-linearities better than Prophet. Data is ingested via a **Kafka-like streaming interface** to ensure our forecasts react instantly to manufacturing delays. The entire system is **containerized with Docker** and managed via **CI/CD**, ensuring it is a production-ready software application, not just a research script."*
+## 🚀 Presentation Strategy
+
+> "My solution treats data science as a part of the engineering whole. We aren't just predicting numbers; we are managing a real-time data lifecycle. By integrating **Data Quality validation** and **MLflow experiment tracking** into the dashboard, I ensure that supply chain planners can trust the model's output and developers can monitor the system's health in real-time."
