@@ -22,4 +22,5 @@ def test_database_init():
     assert db is not None
     sku_list = db.get_all_skus()
     assert len(sku_list) > 0
-    assert "SIEM-DEVICE-A1" in sku_list
+    # Use actual SKU from database.py
+    assert "MRI-TUBE-001" in sku_list
