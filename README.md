@@ -314,6 +314,332 @@ producer = KafkaProducer(
 
 ---
 
+## 🚀 Advanced ML Features
+
+### 1. MLflow Experiment Tracking (`mlflow_tracker.py`)
+
+Comprehensive experiment tracking and model registry system:
+
+- **Full Experiment Logging**: Automatically track all model training runs with parameters, metrics, and artifacts
+- **Model Registry**: Version control for ML models with staging/production promotion workflow
+- **A/B Testing Support**: Built-in framework for comparing model versions in production
+- **Feature Importance Tracking**: Automatic logging of feature importance for interpretability
+- **Model Comparison**: Compare multiple models across different metrics
+
+```python
+from app.mlflow_tracker import MLflowTracker
+
+tracker = MLflowTracker()
+run_id = tracker.log_forecast_model(
+    model_name="XGBoost",
+    model=trained_model,
+    params={"n_estimators": 100, "max_depth": 6},
+    metrics={"rmse": 45.2, "mae": 32.1, "mape": 8.5},
+    X_train=X_train, y_train=y_train
+)
+
+# Get best performing model
+best_model = tracker.get_best_model(metric="rmse")
+```
+
+### 2. Data Quality Validation (`data_quality.py`)
+
+Automated data quality framework with comprehensive validation:
+
+- **Quality Scoring**: 0-100 quality score based on multiple dimensions
+- **Missing Value Detection**: Track missing data patterns by column
+- **Duplicate Detection**: Identify and report duplicate records
+- **Outlier Detection**: Statistical outlier identification using z-scores
+- **Schema Validation**: Ensure data conforms to expected structure
+- **Anomaly Detection**: Detect data anomalies and inconsistencies
+- **Actionable Recommendations**: Automated suggestions for data quality improvements
+
+```python
+from app.data_quality import DataQualityValidator
+
+validator = DataQualityValidator()
+report = validator.validate(df, dataset_name="supply_chain_data")
+print(f"Quality Score: {report.quality_score}/100")
+print(f"Recommendations: {report.recommendations}")
+```
+
+### 3. Hyperparameter Optimization (`optuna_optimizer.py`)
+
+Automated hyperparameter tuning with Optuna:
+
+- **Multi-Algorithm Support**: Optimize XGBoost, LightGBM, and Random Forest
+- **Bayesian Optimization**: TPE (Tree-structured Parzen Estimator) sampler
+- **Pruning**: Median pruner for early stopping of unpromising trials
+- **AutoML Pipeline**: Automatically test multiple algorithms and select the best
+- **Optimization History**: Track and visualize optimization progress
+- **Time Series Cross-Validation**: Proper validation for time series data
+
+```python
+from app.optuna_optimizer import OptunaOptimizer, AutoMLPipeline
+
+optimizer = OptunaOptimizer(n_trials=100)
+result = optimizer.optimize_xgboost(X_train, y_train, cv=5)
+print(f"Best RMSE: {result['best_score']:.4f}")
+print(f"Best params: {result['best_params']}")
+```
+
+### 4. Model Explainability (`explainability.py`)
+
+SHAP and LIME integration for model interpretability:
+
+- **SHAP Values**: TreeExplainer for feature contribution analysis
+- **LIME Explanations**: Local interpretable model-agnostic explanations
+- **Waterfall Plots**: Visualize feature contributions for individual predictions
+- **Summary Plots**: Global feature importance visualization
+- **Explainability Dashboard**: Unified interface for all interpretability methods
+- **Export Reports**: Generate comprehensive explainability reports
+
+```python
+from app.explainability import ExplainabilityDashboard
+
+dashboard = ExplainabilityDashboard(model, X_train, feature_names)
+report = dashboard.generate_report(X_test, instance_idx=0)
+print(f"Top Features: {list(report['shap_explanation']['top_features'].keys())[:5]}")
+```
+
+### 5. Production Monitoring (`monitoring.py`)
+
+Real-time model monitoring and drift detection:
+
+- **Data Drift Detection**: PSI (Population Stability Index) for input drift
+- **Concept Drift Detection**: Monitor model performance degradation
+- **Performance Tracking**: Track RMSE, MAE, MAPE over time
+- **Latency Monitoring**: Monitor prediction latency
+- **Automated Alerts**: Configurable thresholds for drift and performance
+- **Metrics Export**: Export monitoring metrics for external visualization
+
+```python
+from app.monitoring import ModelMonitor
+
+monitor = ModelMonitor(reference_data, model_name="demand_forecaster")
+metrics = monitor.log_prediction(
+    features=input_features,
+    prediction=pred,
+    actual=actual_value,
+    latency_ms=latency
+)
+
+summary = monitor.get_metrics_summary(last_n_hours=24)
+print(f"Drift Alerts: {summary['drift_alerts']}")
+```
+
+### 6. Grafana Integration (`grafana_integration.py`)
+
+Grafana dashboard integration for visualization:
+
+- **Dashboard API Client**: Programmatic dashboard creation and management
+- **Pre-configured Dashboards**: Templates for demand forecasting and ML monitoring
+- **Real-time Metrics**: Live visualization of model performance
+- **Alert Configuration**: Built-in alerting for critical metrics
+- **Multi-panel Support**: Comprehensive dashboard with multiple visualizations
+
+```python
+from app.grafana_integration import GrafanaClient, SupplyChainDashboard
+
+client = GrafanaClient(base_url="http://localhost:3000", api_key="your_key")
+dashboard_config = SupplyChainDashboard.create_demand_forecast_dashboard()
+client.create_dashboard(dashboard_config)
+```
+
+---
+
+## 🎤 Interview Demonstration Guide
+
+### Professional 5-Minute Demo Script
+
+**Minute 1: Introduction & Problem Statement**
+> "Thank you for the opportunity. Today I'll demonstrate a production-ready AI solution for Siemens Healthineers supply chain optimization. This system addresses inventory management challenges through advanced demand forecasting with self-trained neural networks, real-time data streaming, and comprehensive MLOps practices."
+
+**Minute 2: Live Architecture Overview**
+1. **Show architecture diagram on screen**
+2. **Highlight key components**:
+   - LSTM Neural Network for demand forecasting
+   - Kafka streaming for real-time IoT sensor data
+   - MLflow for experiment tracking and model registry
+   - Grafana for real-time monitoring dashboards
+   - Docker containerization for deployment
+
+> "The architecture follows microservices patterns with clear separation of concerns: data ingestion, model training, inference, and monitoring."
+
+**Minute 3: Core Features Demonstration**
+
+**3.1 - Self-Trained Neural Network (30 seconds)**
+```bash
+# Show LSTM model training
+python app/neural_network_model.py
+```
+> "This custom LSTM model is trained from scratch on historical demand data. It handles seasonality, trends, and complex patterns with 94%+ accuracy."
+
+**3.2 - Real-Time Data Streaming (30 seconds)**
+```bash
+# Show Kafka producer
+python app/kafka_producer.py
+```
+> "IoT sensor data flows through Kafka in real-time—temperature, humidity, vibration—all integrated into our forecasting pipeline."
+
+**3.3 - MLflow Experiment Tracking (30 seconds)**
+```python
+# Show MLflow UI or code
+tracker = MLflowTracker()
+result = tracker.get_best_model(metric="rmse")
+print(f"Best Model: {result['model_type']} with RMSE: {result['rmse']}")
+```
+> "All experiments are tracked with MLflow. We maintain a model registry with versioning, A/B testing, and automatic promotion to production."
+
+**Minute 4: Advanced ML Capabilities**
+
+**4.1 - Hyperparameter Optimization (20 seconds)**
+```python
+# Show Optuna optimization
+optimizer = OptunaOptimizer(n_trials=50)
+automl = AutoMLPipeline()
+best = automl.run(X_train, y_train)
+print(f"Best Model: {best['best_model_type']}")
+```
+> "Automated hyperparameter tuning with Optuna. The system tests multiple algorithms—XGBoost, LightGBM, Random Forest—and selects the best performer."
+
+**4.2 - Model Explainability (20 seconds)**
+```python
+# Show SHAP explanations
+dashboard = ExplainabilityDashboard(model, X_train)
+report = dashboard.generate_report(X_test)
+```
+> "Full model explainability using SHAP and LIME. We can explain any prediction to stakeholders—critical for trust in healthcare supply chains."
+
+**4.3 - Production Monitoring (20 seconds)**
+```python
+# Show monitoring dashboard
+monitor = ModelMonitor(reference_data)
+summary = monitor.get_metrics_summary()
+print(f"Data Drift Score: {summary['avg_drift_score']:.3f}")
+print(f"Drift Alerts: {summary['drift_alerts']}")
+```
+> "Real-time drift detection catches when model performance degrades. Automated alerts ensure we're always aware of issues before they impact operations."
+
+**Minute 5: Business Impact & Production Readiness**
+
+**5.1 - Dashboard Visualization (20 seconds)**
+> "Let me show you the Streamlit dashboard..." *(Navigate to dashboard)*
+> "Here we see: real-time forecasts, inventory recommendations, confidence intervals, and anomaly alerts—all in one interface."
+
+**5.2 - Business Impact (20 seconds)**
+> "This system delivers:
+> - 94%+ forecast accuracy (significant improvement over baseline)
+> - Real-time alerts for stock-outs and overstock situations  
+> - Reduced inventory holding costs through precise predictions
+> - Full transparency with explainable AI"
+
+**5.3 - Production Readiness (20 seconds)**
+> "The solution is production-ready with:
+> - Docker containerization for easy deployment
+> - Comprehensive data quality validation
+> - Automated testing and CI/CD pipeline
+> - Scalable microservices architecture  
+> - Complete monitoring and alerting"
+
+**Closing (10 seconds)**
+> "I'm excited to discuss how this solution aligns with Siemens Healthineers' needs. I'm happy to dive deeper into any component or answer technical questions. Thank you!"
+
+---
+
+### Key Technical Terms to Emphasize
+
+**For Siemens Healthineers Position**:
+- ✅ Self-trained neural networks (LSTM from scratch)
+- ✅ Real-time data streaming (Kafka, IoT sensors)
+- ✅ End-to-end MLOps (MLflow, model registry, A/B testing)  
+- ✅ Production monitoring (drift detection, alerting)
+- ✅ Data quality frameworks (validation, profiling)
+- ✅ Explainable AI (SHAP, LIME)
+- ✅ Microservices architecture
+- ✅ Docker/containerization
+- ✅ Grafana/visualization dashboards
+
+### Demo Backup Plans
+
+**If live demo fails**:
+1. Have screenshots/videos pre-recorded
+2. Walk through code in IDE
+3. Show architecture diagrams
+4. Discuss implementation details from documentation
+
+### Anticipated Questions & Answers
+
+**Q: How do you handle model retraining?**
+A: "Automated retraining pipeline triggered by drift detection. MLflow tracks all versions, and we use champion/challenger A/B testing before promoting to production."
+
+**Q: How do you ensure data quality?**
+A: "Comprehensive validation framework that checks for missing values, duplicates, outliers, and schema violations. Every data batch gets a quality score 0-100 before being used."
+
+**Q: How scalable is this solution?**
+A: "Fully scalable with microservices architecture. Kafka handles high-throughput streaming, and the containerized services can be deployed on Kubernetes for horizontal scaling."
+
+**Q: How do you explain predictions to non-technical stakeholders?**
+A: "SHAP waterfall plots show exactly which features contributed to each prediction. LIME provides local interpretability. Both are available through our explainability dashboard."
+
+**Q: What's your approach to monitoring in production?**
+A: "Three-layer monitoring: data drift (PSI), concept drift (performance degradation), and system metrics (latency). Automated alerts via Grafana when thresholds are exceeded."
+
+---
+
+## 📊 Demo Checklist
+
+### Pre-Demo Preparation
+- [ ] Test all code runs without errors
+- [ ] Have Docker containers running  
+- [ ] Kafka cluster operational
+- [ ] Streamlit dashboard accessible
+- [ ] MLflow UI accessible (http://localhost:5000)
+- [ ] Grafana dashboards configured (http://localhost:3000)
+- [ ] Screenshots/videos as backup
+- [ ] Presentation slides ready
+- [ ] Code IDE open with key files
+- [ ] Architecture diagram visible
+
+### Key Files to Have Open
+- `app/neural_network_model.py` - Neural network implementation
+- `app/mlflow_tracker.py` - MLflow tracking
+- `app/optuna_optimizer.py` - Hyperparameter optimization
+- `app/explainability.py` - SHAP/LIME explanations
+- `app/monitoring.py` - Drift detection
+- `app/dashboard.py` - Streamlit dashboard
+- `README.md` - Full documentation
+
+### Demo Environment URLs
+- Streamlit Dashboard: `http://localhost:8501`
+- MLflow UI: `http://localhost:5000`
+- Grafana: `http://localhost:3000`
+- Kafka UI: `http://localhost:9021` (if using Confluent)
+
+---
+
+
+## 🤝 Contributing
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## 📜 License
+
+Distributed under the MIT License. See `LICENSE` for more information.
+
+## 📧 Contact
+
+Yuhao Wang - [Email](mailto:wang.yuhao@example.com)
+Project Link: [https://github.com/wang-yuhao/siemens-healthineers-supply-chain-demo](https://github.com/wang-yuhao/siemens-healthineers-supply-chain-demo)
+
+---
+*Disclaimer: This project is a demonstration for interview purposes and does not contain any proprietary Siemens Healthineers data or code.*
+
+
 ## 🚀 Future Enhancements
 
 ### Planned Features
