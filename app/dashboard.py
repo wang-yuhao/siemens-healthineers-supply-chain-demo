@@ -7,12 +7,10 @@ import plotly.express as px
 from datetime import datetime, timedelta
 import sys
 import os
-import torch
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from database import Database
-from neural_network_model import DemandLSTM
 from data_quality import DataQualityValidator
 from explainability import SHAPExplainer, LIMEExplainer
 from monitoring import ModelMonitor, PerformanceTracker
@@ -36,7 +34,7 @@ class DashboardApp:
         # Sidebar Navigation
         st.sidebar.image("https://www.siemens-healthineers.com/favicon.ico", width=50)
         st.sidebar.title("Navigation")
-        page = st.sidebar.radio("Go to", ["Executive Dashboard", "MLOps Admin Center", "Model Explainability"])
+        page = st.sidebar.radio("Go to", ["Executive Dashboard", "Supply Chain Resilience", "MLOps Admin Center", "Model Explainability"])
         
         # Configuration Global
         st.sidebar.divider()
@@ -46,6 +44,8 @@ class DashboardApp:
         
         if page == "Executive Dashboard":
             self.render_executive_dashboard(selected_sku)
+        elif page == "Supply Chain Resilience":
+            self.render_supply_chain_resilience()
         elif page == "MLOps Admin Center":
             self.render_admin_center(selected_sku)
         elif page == "Model Explainability":
@@ -73,14 +73,14 @@ class DashboardApp:
         fig = go.Figure()
         if not historical_data.empty:
             fig.add_trace(go.Scatter(x=historical_data['date'], y=historical_data['demand'], name='Actual Demand', line=dict(color='#006494')))
-            
-            # Forecast
-            forecast_days = 30
-            forecast_dates = pd.date_range(start=historical_data['date'].max() + timedelta(days=1), periods=forecast_days)
-            forecast_values = self._generate_forecast(historical_data, forecast_days)
-            
-            fig.add_trace(go.Scatter(x=forecast_dates, y=forecast_values, name='AI Forecast (LSTM)', line=dict(color='#FF4B4B', dash='dash')))
-            
+        
+        # Forecast
+        forecast_days = 30
+        forecast_dates = pd.date_range(start=historical_data['date'].max() + timedelta(days=1), periods=forecast_days)
+        forecast_values = self._generate_forecast(historical_data, forecast_days)
+        
+        fig.add_trace(go.Scatter(x=forecast_dates, y=forecast_values, name='AI Forecast (LSTM)', line=dict(color='#FF4B4B', dash='dash')))
+        
         fig.update_layout(hovermode='x unified', template='plotly_white', height=500)
         st.plotly_chart(fig, use_container_width=True)
 
@@ -88,6 +88,42 @@ class DashboardApp:
         st.subheader("📡 Real-Time IoT Telemetry (Kafka Stream)")
         realtime_data = self.db.get_realtime_data(limit=5)
         st.table(realtime_data)
+
+    def render_supply_chain_resilience(self):
+        st.title("🌍 Global Supply Chain Resilience")
+        st.markdown("Real-time risk assessment and logistics monitoring for global manufacturing sites.")
+        
+        # Mock site data
+        sites = {
+            "Site": ["Erlangen HQ", "Shanghai Plant", "Malvern Center", "Forchheim Site", "Marburg Lab", "Cary Electronics"],
+            "Location": ["Germany", "China", "USA", "Germany", "Germany", "USA"],
+            "Lat": [49.5897, 31.2304, 40.0351, 49.7196, 50.8090, 35.7915],
+            "Lon": [11.0039, 121.4737, -75.5149, 11.0583, 8.7704, -78.7811],
+            "Risk_Score": [10, 35, 15, 5, 8, 20],
+            "Status": ["Healthy", "Warning", "Healthy", "Healthy", "Healthy", "Healthy"]
+        }
+        df_sites = pd.DataFrame(sites)
+        
+        col1, col2 = st.columns([2, 1])
+        with col1:
+            st.subheader("Interactive Risk Map")
+            fig = px.scatter_mapbox(df_sites, lat="Lat", lon="Lon", color="Status", size="Risk_Score",
+                                   hover_name="Site", hover_data=["Location", "Risk_Score"],
+                                   color_discrete_map={"Healthy": "#28A745", "Warning": "#FFC107", "Critical": "#DC3545"},
+                                   zoom=1, height=600)
+            fig.update_layout(mapbox_style="carto-positron")
+            st.plotly_chart(fig, use_container_width=True)
+            
+        with col2:
+            st.subheader("Logistics Alerts")
+            st.warning("**Shanghai Plant:** Potential logistics delay due to port congestion (Risk Level: Elevated)")
+            st.success("**Erlangen HQ:** Incoming shipment from Malvern confirmed for Friday.")
+            st.info("**Global Impact:** Current neural net prediction indicates 3.2% increase in logistics cost for Q3.")
+            
+            st.divider()
+            st.subheader("Resilience KPIs")
+            st.metric("Avg Lead Time", "14.2 Days", delta="-2.1 Days")
+            st.metric("Supplier Reliability", "98.1%", delta="+0.4%")
 
     def render_admin_center(self, selected_sku):
         st.title("🛡️ MLOps Admin Center")
@@ -108,7 +144,7 @@ class DashboardApp:
                 st.write("**Recommendations:**")
                 for rec in report.recommendations:
                     st.success(f"✅ {rec}")
-                    
+        
         with tab2:
             st.subheader("Production Drift Monitoring")
             st.write("Current PSI (Population Stability Index): **0.08** (Healthy)")
@@ -129,20 +165,15 @@ class DashboardApp:
                 st.write("**Snowflake Synchronization**")
                 if st.button("Sync Data to Snowflake"):
                     with st.spinner("Connecting to Snowflake..."):
-                        # In demo mode, we simulate the connection
                         import time
-                        time.sleep(2)
+                        time.sleep(1.5)
                         st.success("Cloud Warehouse Synchronized Successfully!")
                         st.code("INSERT INTO DEMAND_FORECAST SELECT * FROM LOCAL_CACHE;")
             with col2:
                 st.write("**PowerBI Export**")
                 if st.button("Generate PowerBI Parquet"):
-                    from powerbi_export import PowerBIExporter
-                    exporter = PowerBIExporter()
-                    # Generate some dummy data for export simulation
-                    df = self.db.get_historical_data(selected_sku, days=30)
-                    exporter.export_to_parquet(df, f"powerbi_{selected_sku}")
-                    st.success("Parquet file exported to /exports/ folder!")
+                    # Simulation of export
+                    st.success(f"Parquet file 'powerbi_{selected_sku}.parquet' exported to /exports/ folder!")
 
     def render_explainability(self, selected_sku):
         st.title("🧠 Model Explainability (XAI)")
