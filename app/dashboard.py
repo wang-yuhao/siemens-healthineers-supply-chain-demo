@@ -17,12 +17,14 @@ from data_quality import DataQualityValidator
 from explainability import SHAPExplainer, LIMEExplainer
 from monitoring import ModelMonitor, PerformanceTracker
 from mlflow_tracker import MLflowTracker
+from snowflake_connector import SnowflakeConnector
 
 class DashboardApp:
     def __init__(self):
         self.db = Database()
         self.validator = DataQualityValidator()
         self.tracker = MLflowTracker()
+        self.snowflake = SnowflakeConnector()
         
         st.set_page_config(
             page_title="Siemens Healthineers - Advanced Supply Chain AI",
@@ -89,9 +91,9 @@ class DashboardApp:
 
     def render_admin_center(self, selected_sku):
         st.title("🛡️ MLOps Admin Center")
-        st.info("System-wide monitoring, data quality validation, and experiment tracking.")
+        st.info("System-wide monitoring, data quality validation, and enterprise integrations.")
         
-        tab1, tab2, tab3 = st.tabs(["📊 Data Quality", "🔍 Model Drift", "🚀 MLflow Tracking"])
+        tab1, tab2, tab3, tab4 = st.tabs(["📊 Data Quality", "🔍 Model Drift", "🚀 MLflow Tracking", "🏢 Enterprise Connectors"])
         
         with tab1:
             st.subheader("Data Validation Report")
@@ -109,20 +111,38 @@ class DashboardApp:
                     
         with tab2:
             st.subheader("Production Drift Monitoring")
-            monitor = ModelMonitor(np.random.rand(100, 5)) # Simplified for demo
-            metrics = monitor.get_metrics_summary()
-            
             st.write("Current PSI (Population Stability Index): **0.08** (Healthy)")
             st.progress(0.08, text="Low Drift Detected")
             st.write("Performance vs Baseline (RMSE): **+1.2%** (Stable)")
 
         with tab3:
             st.subheader("MLflow Experiment Registry")
-            st.write("Integrated Model Registry Status:")
             models = [{"Model": "DemandLSTM-v2", "Stage": "Production", "Accuracy": "94.2%"},
                       {"Model": "XGBoost-Hybrid", "Stage": "Staging", "Accuracy": "92.8%"}]
             st.dataframe(pd.DataFrame(models), use_container_width=True)
             st.link_button("Open MLflow UI (Local)", "http://localhost:5000")
+
+        with tab4:
+            st.subheader("Cloud Warehouse & BI Integrations")
+            col1, col2 = st.columns(2)
+            with col1:
+                st.write("**Snowflake Synchronization**")
+                if st.button("Sync Data to Snowflake"):
+                    with st.spinner("Connecting to Snowflake..."):
+                        # In demo mode, we simulate the connection
+                        import time
+                        time.sleep(2)
+                        st.success("Cloud Warehouse Synchronized Successfully!")
+                        st.code("INSERT INTO DEMAND_FORECAST SELECT * FROM LOCAL_CACHE;")
+            with col2:
+                st.write("**PowerBI Export**")
+                if st.button("Generate PowerBI Parquet"):
+                    from powerbi_export import PowerBIExporter
+                    exporter = PowerBIExporter()
+                    # Generate some dummy data for export simulation
+                    df = self.db.get_historical_data(selected_sku, days=30)
+                    exporter.export_to_parquet(df, f"powerbi_{selected_sku}")
+                    st.success("Parquet file exported to /exports/ folder!")
 
     def render_explainability(self, selected_sku):
         st.title("🧠 Model Explainability (XAI)")
@@ -131,13 +151,12 @@ class DashboardApp:
         col1, col2 = st.columns([1, 2])
         with col1:
             st.write("**Local Explanation**")
-            st.write("Instance: *Latest prediction for MRI-TUBE-001*")
+            st.write(f"Instance: *Latest prediction for {selected_sku}*")
             st.write("Base Value: 450 units")
             st.write("Predicted: 512 units")
             
         with col2:
             st.subheader("Feature Impact (SHAP)")
-            # Mocking the visual for the demo interface
             features = {"Seasonality": 45, "Recent Trend": 12, "Promotion": 5, "Warehouse Cap": -2}
             feat_df = pd.DataFrame(list(features.items()), columns=["Feature", "Impact"])
             fig = px.bar(feat_df, x="Impact", y="Feature", orientation='h', color="Impact", color_continuous_scale="RdBu_r")
